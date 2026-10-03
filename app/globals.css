@@ -14,7 +14,8 @@ body {
 }
 
 body {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 button,
@@ -44,6 +45,9 @@ button {
 /* SIDEBAR */
 
 .sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   padding: 24px 16px;
   display: flex;
@@ -633,5 +637,62 @@ nav {
 
   .steps {
     flex-wrap: wrap;
+  }
+}
+.messages {
+  width: min(720px, 100%);
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  animation: messageIn 0.3s ease;
+}
+
+.message span {
+  display: block;
+  font-size: 10px;
+  margin-bottom: 5px;
+  color: #65ddff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.message p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.user-message {
+  align-self: flex-end;
+  max-width: 80%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ai-message {
+  align-self: flex-start;
+  max-width: 90%;
+  background: rgba(40, 180, 220, 0.05);
+  border: 1px solid rgba(80, 220, 255, 0.12);
+}
+
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

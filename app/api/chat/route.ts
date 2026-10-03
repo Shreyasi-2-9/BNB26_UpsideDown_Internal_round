@@ -1,9 +1,39 @@
 import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+const gemini = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+async function askGemini(message: string) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const result = await gemini.models.generateContent({
+        model: "gemini-3.8-flash",
+        contents: message,
+      });
+
+      return result.text || "Gemini returned no response.";
+    } catch (error) {
+      console.error(`Gemini attempt ${attempt} failed:`, error);
+
+      if (attempt === 3) {
+        return "Gemini temporarily unavailable after 3 attempts.";
+      }
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 * attempt)
+      );
+    }
+  }
+
+  return "Gemini unavailable.";
+}
 
 export async function POST(request: Request) {
   try {
@@ -16,29 +46,51 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = await openai.responses.create({
-      model: "gpt-6-luna",
-      input: [
-        {
-          role: "system",
-          content:
-            "You are BlackBox AI, a helpful general-purpose AI agent. Answer clearly and concisely. For device actions, explain what action would be performed rather than pretending it was actually performed.",
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-    });
+    const [openaiResult, geminiAnswer] = await Promise.all([
+      openai.responses.create({
+        model: "gpt-6-luna",
+        input: [
+          {
+            role: "system",
+            content:
+              "You are BlackBox AI. Answer clearly and accurately.",
+          },
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+      }),
+
+      askGemini(message),
+    ]);
+
+    const openaiAnswer = openaiResult.output_text;
+
+    const finalAnswer = `
+BLACKBOX VERIFICATION
+
+GPT:
+${openaiAnswer}
+
+GEMINI:
+${geminiAnswer}
+`;
 
     return NextResponse.json({
-      reply: response.output_text,
+      reply: finalAnswer,
+      models: {
+        openai: openaiAnswer,
+        gemini: geminiAnswer,
+      },
     });
   } catch (error) {
-    console.error(error);
+    console.error("BlackBox API Error:", error);
 
     return NextResponse.json(
-      { error: "BlackBox could not process the request." },
+      {
+        error: "BlackBox could not process the request.",
+      },
       { status: 500 }
     );
   }
