@@ -1,26 +1,637 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+* {
+  box-sizing: border-box;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #050607;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* MAIN LAYOUT */
+
+.blackbox {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 230px 1fr 320px;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(0, 190, 255, 0.07),
+      transparent 30%
+    ),
+    #050607;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(8, 10, 12, 0.8);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 20px;
+  background: linear-gradient(135deg, #ffffff, #6be7ff);
+  color: #061015;
+  box-shadow: 0 0 25px rgba(0, 210, 255, 0.25);
+}
+
+.logo h2 {
+  font-size: 14px;
+  margin: 0;
+  letter-spacing: 1.5px;
+}
+
+.logo span {
+  font-size: 9px;
+  color: #6e7880;
+  letter-spacing: 2px;
+}
+
+.new-task {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: left;
+  margin-bottom: 25px;
+  transition: 0.2s;
+}
+
+.new-task:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-item {
+  color: #7d878f;
+  padding: 11px 12px;
+  border-radius: 9px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: white;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+.profile {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 5px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 12px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1b2730;
+  display: grid;
+  place-items: center;
+  color: #71e8ff;
+}
+
+.profile strong,
+.profile small {
+  display: block;
+}
+
+.profile strong {
+  font-size: 12px;
+}
+
+.profile small {
+  color: #657078;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+/* MAIN */
+
+.main-area {
+  min-width: 0;
+  position: relative;
+}
+
+.topbar {
+  height: 68px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  color: #9ba5ab;
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #48e6a3;
+  box-shadow: 0 0 12px #48e6a3;
+  margin-right: 8px;
+}
+
+.top-actions {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.top-actions button {
+  background: transparent;
+  color: #879198;
+  border: none;
+}
+
+.hero {
+  min-height: calc(100vh - 68px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* AI ORB */
+
+.orb {
+  width: 150px;
+  height: 150px;
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.orb-core {
+  position: absolute;
+  inset: 25px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      white,
+      #75eaff 20%,
+      #087a9a 50%,
+      #061014 75%
+    );
+
+  box-shadow:
+    0 0 35px rgba(44, 220, 255, 0.35),
+    inset 0 0 25px rgba(255, 255, 255, 0.3);
+
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.orb-core span {
+  font-size: 28px;
+  color: white;
+  text-shadow: 0 0 20px white;
+}
+
+.orb-ring {
+  position: absolute;
+  border: 1px solid rgba(91, 225, 255, 0.35);
+  border-radius: 50%;
+}
+
+.ring-one {
+  inset: 10px;
+  animation: rotate 8s linear infinite;
+}
+
+.ring-two {
+  inset: 0;
+  border-style: dashed;
+  opacity: 0.4;
+  animation: rotateReverse 12s linear infinite;
+}
+
+.orb.thinking .orb-core {
+  animation: think 0.8s ease-in-out infinite;
+
+  box-shadow:
+    0 0 70px rgba(0, 220, 255, 0.65);
+}
+
+.orb.thinking .ring-one {
+  animation-duration: 2s;
+}
+
+.orb.thinking .ring-two {
+  animation-duration: 3s;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes think {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.13);
+  }
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateReverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* HERO TEXT */
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(28px, 3vw, 42px);
+  letter-spacing: -1.5px;
+  text-align: center;
+}
+
+.subtitle {
+  color: #737e85;
+  margin: 12px 0 28px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* EXAMPLES */
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 720px;
+  margin-bottom: 25px;
+}
+
+.examples button {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #9ba5ab;
+  border-radius: 20px;
+  padding: 8px 13px;
+  font-size: 11px;
+  transition: 0.2s;
+}
+
+.examples button:hover {
+  border-color: rgba(90, 220, 255, 0.35);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* PROMPT */
+
+.prompt-wrapper {
+  width: min(720px, 100%);
+  padding: 8px 8px 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.045);
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prompt-wrapper:focus-within {
+  border-color: rgba(79, 216, 255, 0.45);
+
+  box-shadow:
+    0 0 35px rgba(0, 180, 255, 0.08);
+}
+
+.prompt-wrapper textarea {
+  resize: none;
+  flex: 1;
+  outline: none;
+  border: none;
+  background: transparent;
+  color: white;
+  padding: 10px 0;
+  font-size: 13px;
+}
+
+.prompt-wrapper textarea::placeholder {
+  color: #5e686e;
+}
+
+.prompt-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.prompt-actions button {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #77838a;
+}
+
+.prompt-actions .execute {
+  background: white;
+  color: #071015;
+  font-weight: bold;
+}
+
+.prompt-actions .execute:disabled {
+  opacity: 0.3;
+}
+
+/* EXECUTION */
+
+.execution {
+  width: min(720px, 100%);
+  margin-top: 15px;
+  padding: 15px;
+
+  border: 1px solid rgba(75, 220, 255, 0.15);
+  background: rgba(40, 150, 190, 0.04);
+  border-radius: 12px;
+}
+
+.execution-title {
+  font-size: 12px;
+  color: #9cecff;
+}
+
+.loader {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #52ddff;
+  margin-right: 8px;
+
+  box-shadow: 0 0 12px #52ddff;
+
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.steps {
+  display: flex;
+  gap: 18px;
+  margin-top: 12px;
+  color: #59656c;
+  font-size: 10px;
+}
+
+.done {
+  color: #55dca3;
+}
+
+.active-step {
+  color: #60ddff;
+}
+
+/* FLIGHT RECORDER */
+
+.recorder {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 10, 12, 0.75);
+  padding: 24px 18px;
+}
+
+.recorder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.recorder-header h3 {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+}
+
+.recorder-header span {
+  color: #626d73;
+  font-size: 10px;
+  display: block;
+  margin-top: 5px;
+}
+
+.live {
+  font-size: 8px;
+  color: #55dfa5;
+
+  border: 1px solid rgba(85, 223, 165, 0.25);
+
+  padding: 4px 7px;
+
+  border-radius: 20px;
+}
+
+.timeline {
+  margin-top: 35px;
+  margin-left: 5px;
+
+  border-left: 1px solid #20292e;
+
+  padding-left: 18px;
+}
+
+.event {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+
+.event-dot {
+  position: absolute;
+  left: -27px;
+
+  width: 18px;
+  height: 18px;
+
+  border-radius: 50%;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 9px;
+
+  background: #10171b;
+  border: 1px solid #263238;
+}
+
+.event strong,
+.event small {
+  display: block;
+}
+
+.event strong {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.event small {
+  color: #58646b;
+  font-size: 9px;
+  margin-top: 5px;
+}
+
+.success .event-dot {
+  color: #5ae0a5;
+  border-color: rgba(90, 224, 165, 0.3);
+}
+
+.active-event .event-dot {
+  color: #61ddff;
+  border-color: rgba(97, 221, 255, 0.4);
+
+  box-shadow:
+    0 0 15px rgba(97, 221, 255, 0.2);
+}
+
+/* RECORDER FOOTER */
+
+.recorder-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+
+  margin-top: 30px;
+  padding-top: 20px;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.recorder-footer span,
+.recorder-footer strong {
+  display: block;
+}
+
+.recorder-footer span {
+  font-size: 9px;
+  color: #59636a;
+}
+
+.recorder-footer strong {
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1050px) {
+  .blackbox {
+    grid-template-columns: 200px 1fr;
+  }
+
+  .recorder {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .blackbox {
+    display: block;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .hero {
+    padding: 25px 18px;
+  }
+
+  .topbar {
+    padding: 0 18px;
+  }
+
+  .examples {
+    display: none;
+  }
+
+  .steps {
+    flex-wrap: wrap;
+  }
 }
