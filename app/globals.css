@@ -696,3 +696,166 @@ nav {
     transform: translateY(0);
   }
 }
+/* =========================================
+   FLIGHT RECORDER
+========================================= */
+
+.timeline {
+  position: relative;
+}
+
+.empty-recorder {
+  text-align: center;
+  padding: 70px 20px;
+  opacity: 0.7;
+}
+
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty-recorder p {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+
+.empty-recorder small {
+  display: block;
+  font-size: 10px;
+  color: #6f7f8b;
+  line-height: 1.5;
+}
+
+/* EVENT */
+
+.event {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  min-height: 58px;
+  animation: recorderIn 0.35s ease;
+}
+
+.event-line {
+  position: relative;
+  width: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.event-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  z-index: 2;
+}
+
+.event-connector {
+  position: absolute;
+  top: 18px;
+  bottom: -4px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.event-content {
+  padding-bottom: 18px;
+  flex: 1;
+}
+
+.event-content strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.event-content small {
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  color: #71808a;
+}
+
+/* SUCCESS */
+
+.event.success .event-dot {
+  border-color: rgba(80, 255, 180, 0.4);
+}
+
+.event.success .event-content strong {
+  color: #d8fff0;
+}
+
+/* ERROR */
+
+.event.error-event .event-dot {
+  border-color: rgba(255, 90, 90, 0.5);
+}
+
+.event.error-event .event-content strong {
+  color: #ffaaaa;
+}
+
+/* PARTIAL */
+
+.event.partial-event .event-dot {
+  border-color: rgba(255, 190, 80, 0.5);
+}
+
+.event.partial-event .event-content strong {
+  color: #ffe0a3;
+}
+
+/* ACTIVE */
+
+.event.active-event .event-dot {
+  border-color: rgba(80, 210, 255, 0.45);
+}
+
+.event.active-event .event-content strong {
+  color: #c8f5ff;
+}
+
+/* ANIMATION */
+
+@keyframes recorderIn {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* LIVE */
+
+.live {
+  animation: livePulse 1.8s infinite;
+}
+
+@keyframes livePulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

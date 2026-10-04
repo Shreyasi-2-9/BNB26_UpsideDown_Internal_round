@@ -7,17 +7,24 @@ type Message = {
   content: string;
 };
 
+type RecorderEvent = {
+  type: string;
+  model?: string;
+  status: string;
+  message: string;
+};
+
 export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [running, setRunning] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [recorderEvents, setRecorderEvents] = useState<RecorderEvent[]>([]);
 
   const runTask = async () => {
     if (!prompt.trim() || running) return;
 
     const userMessage = prompt.trim();
 
-    // Add user message
     setMessages((prev) => [
       ...prev,
       {
@@ -46,6 +53,11 @@ export default function Home() {
         throw new Error(data.error || "Request failed");
       }
 
+      // Update Flight Recorder with backend events
+      if (data.events) {
+        setRecorderEvents(data.events);
+      }
+
       // Add AI response
       setMessages((prev) => [
         ...prev,
@@ -56,6 +68,16 @@ export default function Home() {
       ]);
     } catch (error) {
       console.error("Chat error:", error);
+
+      // Record frontend error
+      setRecorderEvents((prev) => [
+        ...prev,
+        {
+          type: "error",
+          status: "error",
+          message: "BlackBox request failed",
+        },
+      ]);
 
       setMessages((prev) => [
         ...prev,
@@ -69,6 +91,18 @@ export default function Home() {
       setRunning(false);
     }
   };
+
+  const modelCount = recorderEvents.filter(
+    (event) => event.type === "model"
+  ).length;
+
+  const errorCount = recorderEvents.filter(
+    (event) => event.status === "error"
+  ).length;
+
+  const actionCount = recorderEvents.filter(
+    (event) => event.type === "action"
+  ).length;
 
   return (
     <main className="blackbox">
@@ -88,6 +122,7 @@ export default function Home() {
           onClick={() => {
             setPrompt("");
             setMessages([]);
+            setRecorderEvents([]);
           }}
         >
           ＋ New Task
@@ -280,77 +315,128 @@ export default function Home() {
       </section>
 
       {/* FLIGHT RECORDER */}
-      <aside className="recorder">
-        <div className="recorder-header">
-          <div>
-            <h3>FLIGHT RECORDER</h3>
+     {/* FLIGHT RECORDER */}
+<aside className="recorder">
+  <div className="recorder-header">
+    <div>
+      <h3>FLIGHT RECORDER</h3>
+      <span>Live execution trace</span>
+    </div>
 
-            <span>Live execution trace</span>
-          </div>
+    <div className="live">
+      LIVE
+    </div>
+  </div>
 
-          <div className="live">LIVE</div>
-        </div>
+  <div className="timeline">
+    {recorderEvents.length === 0 ? (
+      <div className="empty-recorder">
+        <div className="empty-icon">◌</div>
 
-        <div className="timeline">
-          <div className="event success">
-            <div className="event-dot">✓</div>
+        <p>Waiting for task...</p>
 
-            <div>
-              <strong>Request understood</strong>
-              <small>Ready</small>
+        <small>
+          BlackBox execution events will appear here
+        </small>
+      </div>
+    ) : (
+      recorderEvents.map((event, index) => {
+        const isSuccess =
+          event.status === "success";
+
+        const isError =
+          event.status === "error";
+
+        const isPartial =
+          event.status === "partial";
+
+        const isVerification =
+          event.type === "verification";
+
+        return (
+          <div
+            key={index}
+            className={`event ${
+              isSuccess
+                ? "success"
+                : isError
+                ? "error-event"
+                : isPartial
+                ? "partial-event"
+                : "active-event"
+            }`}
+          >
+            <div className="event-line">
+              <div className="event-dot">
+                {isSuccess
+                  ? "✓"
+                  : isError
+                  ? "!"
+                  : isPartial
+                  ? "◐"
+                  : isVerification
+                  ? "◈"
+                  : "●"}
+              </div>
+
+              {index <
+                recorderEvents.length - 1 && (
+                <div className="event-connector" />
+              )}
             </div>
-          </div>
 
-          <div className="event success">
-            <div className="event-dot">✓</div>
-
-            <div>
-              <strong>Planning execution</strong>
-              <small>Ready</small>
-            </div>
-          </div>
-
-          <div className="event success">
-            <div className="event-dot">✓</div>
-
-            <div>
-              <strong>AI verification</strong>
-              <small>Ready</small>
-            </div>
-          </div>
-
-          <div className="event active-event">
-            <div className="event-dot">●</div>
-
-            <div>
+            <div className="event-content">
               <strong>
-                {running ? "Executing task" : "Waiting for task"}
+                {event.message}
               </strong>
 
-              <small>
-                {running ? "Running..." : "Ready"}
-              </small>
+              {event.model && (
+                <small>
+                  Model: {event.model}
+                </small>
+              )}
+
+              {!event.model && (
+                <small>
+                  {event.type === "verification"
+                    ? "Verification Engine"
+                    : event.type === "request"
+                    ? "BlackBox Core"
+                    : event.type === "final"
+                    ? "Output"
+                    : event.status}
+                </small>
+              )}
             </div>
           </div>
-        </div>
+        );
+      })
+    )}
+  </div>
 
-        <div className="recorder-footer">
-          <div>
-            <span>Models</span>
-            <strong>1</strong>
-          </div>
+  <div className="recorder-footer">
+    <div>
+      <span>Models</span>
+      <strong>
+        {modelCount}
+      </strong>
+    </div>
 
-          <div>
-            <span>Actions</span>
-            <strong>0</strong>
-          </div>
+    <div>
+      <span>Actions</span>
+      <strong>
+        {actionCount}
+      </strong>
+    </div>
 
-          <div>
-            <span>Errors</span>
-            <strong>0</strong>
-          </div>
-        </div>
-      </aside>
+    <div>
+      <span>Errors</span>
+      <strong>
+        {errorCount}
+      </strong>
+    </div>
+  </div>
+</aside>
     </main>
   );
 }
